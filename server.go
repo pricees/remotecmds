@@ -65,11 +65,18 @@ func (cmdServer *CmdServer) handleConnection(conn net.Conn) {
 	input, _ := bufio.NewReader(conn).ReadString('\n')
 
 	var res string
-	switch strings.ToLower(input[:len(input)-1]) {
+    cmd := strings.ToLower(input[:len(input)-1]) 
+    fmt.Println(cmd)
+	switch cmd {
 	case "utc":
 		res = time.Now().UTC().String()
+    case "availableram":
+        res = memoryProfile()
 	default:
 		res = "Hello World"
 	}
 	conn.Write([]byte(fmt.Sprintf("%s%c", res, '\n')))
+}
+func memoryProfile() string {
+    return "foobar"
 }

@@ -9,6 +9,13 @@ import (
 	"time"
 )
 
+func setup() (*CmdServer, net.Conn) {
+	server := NewCmdServer()
+	server.Listen()
+	conn, _ := net.Dial("tcp", ":8080")
+    return server, conn
+}
+
 func TestServer(t *testing.T) {
 
 	server := NewCmdServer()
@@ -21,10 +28,8 @@ func TestServer(t *testing.T) {
 
 func TestConnectionHandler(t *testing.T) {
 
-	server := NewCmdServer()
-	server.Listen()
+    server, conn := setup()
 
-	conn, _ := net.Dial("tcp", ":8080")
 	exp := "Hello World\n"
 
 	_, err := conn.Write([]byte(exp))
@@ -42,14 +47,11 @@ func TestConnectionHandler(t *testing.T) {
 }
 
 func TestUTCTime(t *testing.T) {
-	server := NewCmdServer()
-	server.Listen()
-
-	conn, _ := net.Dial("tcp", ":8080")
+    server, conn := setup()
 
 	_, err := conn.Write([]byte("UTC\n"))
 	if err != nil {
-		//handle error
+        t.Fatal("Connection couldn't be written to.")
 	}
 
 	regex := fmt.Sprintf("%d.*UTC", time.Now().Year())
@@ -58,30 +60,185 @@ func TestUTCTime(t *testing.T) {
 	res, _ := bufio.NewReader(conn).ReadString('\n')
 
 	if !validTime.Match([]byte(res)) {
-		t.Errorf("Time should math %s but got %v", regex, res)
+		t.Errorf("Time should match %s but got %v", regex, res)
 	}
 
 	server.Close()
 }
 
-/*
-func TestSomething (t *testing.T) {
-	server := NewCmdServer()
-	server.Listen()
+func TestCPUCurrent(t *testing.T) {
+    server, conn := setup()
 
-	conn, _ := net.Dial("tcp", ":8080")
-	exp := "Hello World\n"
+    cmd := "CPUCurrent"
 
-	_, err := conn.Write([]byte(exp))
+	_, err := conn.Write([]byte(cmd+ "\n"))
 	if err != nil {
-		//handle error
+        t.Fatal("Connection couldn't be written to.")
 	}
+
+	regex := fmt.Sprintf("%d.*UTC", time.Now().Year())
+	exp:= regexp.MustCompile(regex)
 
 	res, _ := bufio.NewReader(conn).ReadString('\n')
 
-	if res != exp {
-		t.Errorf("Status should be %v got %v", exp, res)
+	if !exp.Match([]byte(res)) {
+		t.Errorf("Expected response to match %s but got %v", regex, res)
 	}
 
 	server.Close()
-}*/
+}
+
+func TestRAM(t *testing.T) {
+    server, conn := setup()
+
+    cmd := "availableRAM"
+
+	_, err := conn.Write([]byte(cmd + "\n"))
+	if err != nil {
+        t.Fatal("Connection couldn't be written to.")
+	}
+
+	regex := fmt.Sprintf("%d.*UTC", time.Now().Year())
+	exp:= regexp.MustCompile(regex)
+
+	res, _ := bufio.NewReader(conn).ReadString('\n')
+
+	if !exp.Match([]byte(res)) {
+		t.Errorf("Expected response to match %s but got %v", regex, res)
+	}
+
+	server.Close()
+}
+
+func TestCPULastHour(t *testing.T) {
+    server, conn := setup()
+
+    cmd := "CPULastHour"
+
+	_, err := conn.Write([]byte(cmd+ "\n"))
+	if err != nil {
+        t.Fatal("Connection couldn't be written to.")
+	}
+
+	regex := fmt.Sprintf("%d.*UTC", time.Now().Year())
+	exp:= regexp.MustCompile(regex)
+
+	res, _ := bufio.NewReader(conn).ReadString('\n')
+
+	if !exp.Match([]byte(res)) {
+		t.Errorf("Expected response to match %s but got %v", regex, res)
+	}
+
+	server.Close()
+}
+
+func TestAvailableRAMLastHour(t *testing.T) {
+    server, conn := setup()
+
+    cmd := "availableRAMLastHour"
+
+	_, err := conn.Write([]byte(cmd + "\n"))
+	if err != nil {
+        t.Fatal("Connection couldn't be written to.")
+	}
+
+	regex := fmt.Sprintf("%d.*UTC", time.Now().Year())
+	exp:= regexp.MustCompile(regex)
+
+	res, _ := bufio.NewReader(conn).ReadString('\n')
+
+	if !exp.Match([]byte(res)) {
+		t.Errorf("Expected response to match %s but got %v", regex, res)
+	}
+
+	server.Close()
+}
+
+func TestDLUrl(t *testing.T) {
+    server, conn := setup()
+
+    cmd := "DownloadURL"
+
+	_, err := conn.Write([]byte(cmd+ "\n"))
+	if err != nil {
+        t.Fatal("Connection couldn't be written to.")
+	}
+
+	regex := fmt.Sprintf("%d.*UTC", time.Now().Year())
+	exp:= regexp.MustCompile(regex)
+
+	res, _ := bufio.NewReader(conn).ReadString('\n')
+
+	if !exp.Match([]byte(res)) {
+		t.Errorf("Expected response to match %s but got %v", regex, res)
+	}
+
+	server.Close()
+}
+
+func TestSay(t *testing.T) {
+    server, conn := setup()
+
+    cmd := "say"
+
+	_, err := conn.Write([]byte(cmd+ "\n"))
+	if err != nil {
+        t.Fatal("Connection couldn't be written to.")
+	}
+
+	regex := fmt.Sprintf("%d.*UTC", time.Now().Year())
+	exp:= regexp.MustCompile(regex)
+
+	res, _ := bufio.NewReader(conn).ReadString('\n')
+
+	if !exp.Match([]byte(res)) {
+		t.Errorf("Expected response to match %s but got %v", regex, res)
+	}
+
+	server.Close()
+}
+
+func TestCaptureSS(t *testing.T) {
+    server, conn := setup()
+
+    cmd := ""
+
+	_, err := conn.Write([]byte(cmd+ "\n"))
+	if err != nil {
+        t.Fatal("Connection couldn't be written to.")
+	}
+
+	regex := fmt.Sprintf("%d.*UTC", time.Now().Year())
+	exp:= regexp.MustCompile(regex)
+
+	res, _ := bufio.NewReader(conn).ReadString('\n')
+
+	if !exp.Match([]byte(res)) {
+		t.Errorf("Expected response to match %s but got %v", regex, res)
+	}
+
+	server.Close()
+}
+
+func TestTriggerWebhook(t *testing.T) {
+    server, conn := setup()
+
+    cmd := ""
+
+	_, err := conn.Write([]byte(cmd+ "\n"))
+	if err != nil {
+        t.Fatal("Connection couldn't be written to.")
+	}
+
+	regex := fmt.Sprintf("%d.*UTC", time.Now().Year())
+	exp:= regexp.MustCompile(regex)
+
+	res, _ := bufio.NewReader(conn).ReadString('\n')
+
+	if !exp.Match([]byte(res)) {
+		t.Errorf("Expected response to match %s but got %v", regex, res)
+	}
+
+	server.Close()
+}
+
