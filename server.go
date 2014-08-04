@@ -1,8 +1,26 @@
+/*
+
+Go Bootcamp: Remote Commands Project
+
+Current UTC time
+Current CPU usage
+Available RAM
+CPU usage over last hour
+Available RAM over last hour
+Download url into specific folder
+Make computer "say" something
+Capture and send a screenshot
+Trigger webhook at specific time
+
+*/
 package server
 
 import (
+	"bufio"
 	"fmt"
 	"net"
+	"strings"
+	"time"
 )
 
 type CmdServer struct {
@@ -44,5 +62,14 @@ func NewCmdServer() *CmdServer {
 }
 
 func (cmdServer *CmdServer) handleConnection(conn net.Conn) {
-	conn.Write([]byte("Hello World\n"))
+	input, _ := bufio.NewReader(conn).ReadString('\n')
+
+	var res string
+	switch strings.ToLower(input[:len(input)-1]) {
+	case "utc":
+		res = time.Now().UTC().String()
+	default:
+		res = "Hello World"
+	}
+	conn.Write([]byte(fmt.Sprintf("%s%c", res, '\n')))
 }
